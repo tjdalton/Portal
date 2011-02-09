@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
  * Handle events for all Player related events
  * 
  * @author oTHi
+ * @email the.othi@gmail.com
  */
 @SuppressWarnings("unused")
 public class PortalPlayerListener extends PlayerListener {
