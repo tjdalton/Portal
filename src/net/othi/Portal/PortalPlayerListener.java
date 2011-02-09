@@ -161,7 +161,7 @@ public class PortalPlayerListener extends PlayerListener {
 					}
 
 				}
-				// Adjust destination to prevent clipping and trigger portal transfer.
+				// Adjust destination to prevent clipping and trigger portal.
 				newLoc.setX(newLoc.getBlockX() + 2);
 				newLoc.setY(newLoc.getBlockY() + 2);
 				// Update from/to to avoid 'player moved wrongly'
