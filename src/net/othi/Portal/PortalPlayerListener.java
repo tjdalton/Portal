@@ -22,7 +22,7 @@ public class PortalPlayerListener extends PlayerListener {
 	public PortalPlayerListener(Portal instance) {
 		plugin = instance;
 	}
-
+//testcomment
 	// Portal layout
 	int[][] matrix = { { 49, 49, 49, 49 }, { 49, 0, 0, 49 }, { 49, 0, 0, 49 },
 			{ 49, 0, 0, 49 }, { 49, 49, 49, 49 } };
