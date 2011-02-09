@@ -38,16 +38,16 @@ public class PortalPlayerListener extends PlayerListener {
 			if(world.getEnvironment()==World.Environment.NETHER)
 				break;
 			}
-			factor = 16;
+			factor = 1/16;
 		} else {
 			for(int i =0;i<plugin.getServer().getWorlds().size();i++){
 				world = plugin.getServer().getWorlds().get(i);
 				if(world.getEnvironment()==World.Environment.NORMAL)
 					break;
 				}
-			factor = 1 / 16;
+			factor = 16;
 		}
-		factor = 1;
+		//factor = 1;
 		// Check if player is standing on a Netherportal.
 		if ((loc.getWorld().getBlockTypeIdAt(loc.getBlockX(),
 				loc.getBlockY() - 1, loc.getBlockZ()) == Material.OBSIDIAN.getId())) {
@@ -175,7 +175,7 @@ public class PortalPlayerListener extends PlayerListener {
 				// Update from/to to avoid 'player moved wrongly'
 				event.setFrom(newLoc);
 				event.setTo(newLoc);
-				System.out.println("Worlds: " + newLoc.getWorld().getEnvironment().toString());
+				//System.out.println("Worlds: " + newLoc.getWorld().getEnvironment().toString());
 				event.getPlayer().teleportTo(newLoc);
 				System.out.println(event.getPlayer().getDisplayName()
 						+ " was transported to: "
