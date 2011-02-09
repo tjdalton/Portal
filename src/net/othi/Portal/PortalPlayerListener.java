@@ -167,6 +167,7 @@ public class PortalPlayerListener extends PlayerListener {
 				// Update from/to to avoid 'player moved wrongly'
 				event.setFrom(newLoc);
 				event.setTo(newLoc);
+				//System.out.println("Worlds: " + plugin.getServer().getWorlds().size());
 				event.getPlayer().teleportTo(newLoc);
 				System.out.println(event.getPlayer().getDisplayName()
 						+ " was transported to: "
