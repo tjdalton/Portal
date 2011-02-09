@@ -29,14 +29,22 @@ public class PortalPlayerListener extends PlayerListener {
 
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Location loc = event.getPlayer().getLocation();
-		World world;
+		World world = null;
 		double factor;
 		// Check which world player is currently in, and set factor
 		if (loc.getWorld().getEnvironment() == World.Environment.NORMAL) {
-			world = plugin.getServer().getWorlds().get(1);
+			for(int i =0;i<plugin.getServer().getWorlds().size();i++){
+			world = plugin.getServer().getWorlds().get(i);
+			if(world.getEnvironment()==World.Environment.NETHER)
+				break;
+			}
 			factor = 16;
 		} else {
-			world = plugin.getServer().getWorlds().get(0);
+			for(int i =0;i<plugin.getServer().getWorlds().size();i++){
+				world = plugin.getServer().getWorlds().get(i);
+				if(world.getEnvironment()==World.Environment.NORMAL)
+					break;
+				}
 			factor = 1 / 16;
 		}
 		factor = 1;
@@ -167,7 +175,7 @@ public class PortalPlayerListener extends PlayerListener {
 				// Update from/to to avoid 'player moved wrongly'
 				event.setFrom(newLoc);
 				event.setTo(newLoc);
-				//System.out.println("Worlds: " + plugin.getServer().getWorlds().size());
+				System.out.println("Worlds: " + newLoc.getWorld().getEnvironment().toString());
 				event.getPlayer().teleportTo(newLoc);
 				System.out.println(event.getPlayer().getDisplayName()
 						+ " was transported to: "
