@@ -78,6 +78,7 @@ public class PortalPlayerListener extends PlayerListener {
 							+ " was transported to: "
 							+ old.getWorld().getEnvironment().toString());
 				}
+				
 				else{
 					System.out.println("Creating new Portal");
 					int x = 0;
