@@ -1,9 +1,11 @@
 package net.othi.Portal;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -65,32 +67,18 @@ public class PortalPlayerListener extends PlayerListener {
 					world.loadChunk(newLoc.getBlockX(), newLoc.getBlockY());
 				}
 				// Check to see if we need to make a new connecting portal
-				if (!(((newLoc.getWorld().getBlockTypeIdAt(newLoc.getBlockX(),
-						newLoc.getBlockY() - 1, newLoc.getBlockZ()) == Material.OBSIDIAN
-						.getId()) && (newLoc.getWorld().getBlockTypeIdAt(
-						newLoc.getBlockX() - 1, newLoc.getBlockY() - 1,
-						newLoc.getBlockZ()) == Material.OBSIDIAN.getId())) || ((newLoc
-						.getWorld().getBlockTypeIdAt(newLoc.getBlockX() + 1,
-								newLoc.getBlockY() - 1, newLoc.getBlockZ()) == Material.OBSIDIAN
-						.getId())
-						&& (newLoc.getWorld().getBlockTypeIdAt(
-								newLoc.getBlockX(), newLoc.getBlockY() - 1,
-								newLoc.getBlockZ()) == Material.OBSIDIAN
-								.getId())
-						|| ((newLoc.getWorld().getBlockTypeIdAt(
-								newLoc.getBlockX(), newLoc.getBlockY() - 1,
-								newLoc.getBlockZ() + 1) == Material.OBSIDIAN
-								.getId()) && (newLoc.getWorld()
-								.getBlockTypeIdAt(newLoc.getBlockX(),
-										newLoc.getBlockY() - 1,
-										newLoc.getBlockZ()) == Material.OBSIDIAN
-								.getId())) || ((newLoc.getWorld()
-						.getBlockTypeIdAt(newLoc.getBlockX(),
-								newLoc.getBlockY() - 1, newLoc.getBlockZ() - 1) == Material.OBSIDIAN
-						.getId()) && (newLoc.getWorld().getBlockTypeIdAt(
-						newLoc.getBlockX(), newLoc.getBlockY() - 1,
-						newLoc.getBlockZ()) == Material.OBSIDIAN.getId()))))) {
-					System.out.println("Recycling Portal");
+				Location old=findPortal(newLoc);
+				if (world.getBlockAt(old.getBlockX(), old.getBlockY(), old.getBlockZ()).getType()==Material.OBSIDIAN) {
+					System.out.println("Reusing Portal");
+					event.setFrom(old);
+					event.setTo(old);
+					event.getPlayer().teleportTo(old);
+					System.out.println(event.getPlayer().getDisplayName()
+							+ " was transported to: "
+							+ old.getWorld().getEnvironment().toString());
+				}
+				else{
+					System.out.println("Creating new Portal");
 					int x = 0;
 					// Try to avoid creating a portal in the air, move down if
 					// so
@@ -215,6 +203,32 @@ public class PortalPlayerListener extends PlayerListener {
 						+ newLoc.getWorld().getEnvironment().toString());
 			}
 		}
+	}
+	
+	public Location findPortal(Location loc){
+		World world = loc.getWorld();
+		Block block = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		System.out.println("Block is: " + block.getType().toString());
+		Chunk chunk = block.getChunk();
+		System.out.println("loc: x: " + loc.getBlockX() + " y: "+ loc.getY()+ " z: " + loc.getBlockZ());
+		beginChunk:
+		for(int i=0;i<15;i++){
+			for(int j=0;j<127;j++){
+				for(int k=0;k<15;k++){
+					if(chunk.getBlock(j, i, k).getType()==Material.OBSIDIAN)
+						System.out.println(chunk.getBlock(i, j, k).getType().toString());
+					if(chunk.getBlock(i, j, k).getType()==Material.OBSIDIAN){
+						loc.setX(chunk.getBlock(i, j, k).getX()+1);
+						loc.setY(chunk.getBlock(i, j, k).getY());
+						loc.setZ(chunk.getBlock(i, j, k).getZ());
+						System.out.println("Success: " + chunk.getBlock(i, j, k).getType().toString());
+						break beginChunk;
+					}
+				}
+			}
+		}
+		System.out.println("newloc: x: " + loc.getBlockX() + " y: "+ loc.getY()+ " z: " + loc.getBlockZ());
+		return loc;
 	}
 
 }
