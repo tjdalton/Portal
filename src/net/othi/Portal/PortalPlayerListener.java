@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.PluginManager;
 
 /**
  * Handle events for all Player related events
@@ -68,7 +69,7 @@ public class PortalPlayerListener extends PlayerListener {
 				}
 				// Check to see if we need to make a new connecting portal
 				Location old=findPortal(newLoc);
-				if (world.getBlockAt(old.getBlockX(), old.getBlockY(), old.getBlockZ()).getType()==Material.OBSIDIAN) {
+				if (world.getBlockAt(old.getBlockX()-1, old.getBlockY(), old.getBlockZ()-1).getType()==Material.OBSIDIAN) {
 					System.out.println("Reusing Portal");
 					event.setFrom(old);
 					event.setTo(old);
@@ -205,6 +206,7 @@ public class PortalPlayerListener extends PlayerListener {
 		}
 	}
 	
+	
 	public Location findPortal(Location loc){
 		World world = loc.getWorld();
 		Block block = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
@@ -218,9 +220,9 @@ public class PortalPlayerListener extends PlayerListener {
 					if(chunk.getBlock(j, i, k).getType()==Material.OBSIDIAN)
 						System.out.println(chunk.getBlock(i, j, k).getType().toString());
 					if(chunk.getBlock(i, j, k).getType()==Material.OBSIDIAN){
-						loc.setX(chunk.getBlock(i, j, k).getX()+1);
+						loc.setX(chunk.getBlock(i, j, k).getX()+2);
 						loc.setY(chunk.getBlock(i, j, k).getY());
-						loc.setZ(chunk.getBlock(i, j, k).getZ());
+						loc.setZ(chunk.getBlock(i, j, k).getZ()+1);
 						System.out.println("Success: " + chunk.getBlock(i, j, k).getType().toString());
 						break beginChunk;
 					}
