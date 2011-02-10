@@ -42,7 +42,7 @@ public class PortalPlayerListener extends PlayerListener {
 				if (world.getEnvironment() == World.Environment.NETHER)
 					break;
 			}
-			factor = 1/16;
+			factor = 1 / 16;
 		} else {
 			for (int i = 0; i < plugin.getServer().getWorlds().size(); i++) {
 				world = plugin.getServer().getWorlds().get(i);
@@ -51,35 +51,41 @@ public class PortalPlayerListener extends PlayerListener {
 			}
 			factor = 16;
 		}
-		 factor = 1;
+		// factor = 1;
 		// Check if player is standing on a Netherportal.
 		if ((loc.getWorld().getBlockTypeIdAt(loc.getBlockX(),
 				loc.getBlockY() - 1, loc.getBlockZ()) == Material.OBSIDIAN
 				.getId())) {
 			if ((loc.getWorld().getBlockTypeIdAt(loc.getBlockX(),
 					loc.getBlockY(), loc.getBlockZ()) == Material.PORTAL
-					.getId())) {
+					.getId())
+					&& (loc.getWorld().getBlockTypeIdAt(loc.getBlockX(),
+							loc.getBlockY() + 1, loc.getBlockZ()) == Material.PORTAL
+							.getId())) {
 				Location newLoc = new Location(world, loc.getX() * factor,
 						loc.getY(), loc.getZ() * factor, loc.getPitch(),
 						loc.getYaw());
-				//newLoc.setX(newLoc.getX()-2);
-				//newLoc.setY(newLoc.getY()-2);
-				if(!world.isChunkLoaded(newLoc.getBlockX(), newLoc.getBlockY())){
-					world.loadChunk(newLoc.getBlockX(), newLoc.getBlockY());
-				}
+				// newLoc.setX(newLoc.getX()-2);
+				// newLoc.setY(newLoc.getY()-2);
+
 				// Check to see if we need to make a new connecting portal
-				Location old=findPortal(newLoc);
-				if (world.getBlockAt(old.getBlockX()-1, old.getBlockY(), old.getBlockZ()-1).getType()==Material.OBSIDIAN) {
+				Location old = findPortal(newLoc);
+				world.unloadChunk(newLoc.getBlockX(), newLoc.getBlockY());
+				if(!world.isChunkLoaded(old.getBlockX(), old.getBlockY())){
+				  world.unloadChunk(newLoc.getBlockX(), newLoc.getBlockY());
+				  world.loadChunk(old.getBlockX(), old.getBlockY());
+				  }
+				if (world.getBlockAt(old.getBlockX() - 1, old.getBlockY(),
+						old.getBlockZ() - 1).getType() == Material.OBSIDIAN) {
 					System.out.println("Reusing Portal");
-					event.setFrom(old);
-					event.setTo(old);
-					event.getPlayer().teleportTo(old);
+					event.getPlayer().teleportTo(event.getTo());
+					event.getPlayer().teleportTo(event.getTo());
 					System.out.println(event.getPlayer().getDisplayName()
 							+ " was transported to: "
 							+ old.getWorld().getEnvironment().toString());
 				}
-				
-				else{
+
+				else {
 					System.out.println("Creating new Portal");
 					int x = 0;
 					// Try to avoid creating a portal in the air, move down if
@@ -94,6 +100,14 @@ public class PortalPlayerListener extends PlayerListener {
 							|| newLoc.getWorld().getBlockTypeIdAt(
 									newLoc.getBlockX(), newLoc.getBlockY() - 1,
 									newLoc.getBlockZ()) == Material.PORTAL
+									.getId()
+							|| newLoc.getWorld().getBlockTypeIdAt(
+									newLoc.getBlockX(), newLoc.getBlockY() - 1,
+									newLoc.getBlockZ()) == Material.LEAVES
+									.getId()
+							|| newLoc.getWorld().getBlockTypeIdAt(
+									newLoc.getBlockX(), newLoc.getBlockY() - 1,
+									newLoc.getBlockZ()) == Material.WOOD
 									.getId()) {
 						if (newLoc.getBlockY() >= 2) {
 							newLoc.setY(newLoc.getY() - 1);
@@ -206,31 +220,24 @@ public class PortalPlayerListener extends PlayerListener {
 			}
 		}
 	}
-	
-	
-	public Location findPortal(Location loc){
+
+	public Location findPortal(Location loc) {
 		World world = loc.getWorld();
-		Block block = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-		System.out.println("Block is: " + block.getType().toString());
+		Block block = world.getBlockAt(loc.getBlockX(), loc.getBlockY(),
+				loc.getBlockZ());
 		Chunk chunk = block.getChunk();
-		System.out.println("loc: x: " + loc.getBlockX() + " y: "+ loc.getY()+ " z: " + loc.getBlockZ());
-		beginChunk:
-		for(int i=0;i<15;i++){
-			for(int j=0;j<127;j++){
-				for(int k=0;k<15;k++){
-					if(chunk.getBlock(j, i, k).getType()==Material.OBSIDIAN)
-						System.out.println(chunk.getBlock(i, j, k).getType().toString());
-					if(chunk.getBlock(i, j, k).getType()==Material.OBSIDIAN){
-						loc.setX(chunk.getBlock(i, j, k).getX()+2);
+		beginChunk: for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 127; j++) {
+				for (int k = 0; k < 15; k++) {
+					if (chunk.getBlock(i, j, k).getType() == Material.OBSIDIAN) {
+						loc.setX(chunk.getBlock(i, j, k).getX() + 2);
 						loc.setY(chunk.getBlock(i, j, k).getY());
-						loc.setZ(chunk.getBlock(i, j, k).getZ()+1);
-						System.out.println("Success: " + chunk.getBlock(i, j, k).getType().toString());
+						loc.setZ(chunk.getBlock(i, j, k).getZ() + 1);
 						break beginChunk;
 					}
 				}
 			}
 		}
-		System.out.println("newloc: x: " + loc.getBlockX() + " y: "+ loc.getY()+ " z: " + loc.getBlockZ());
 		return loc;
 	}
 
